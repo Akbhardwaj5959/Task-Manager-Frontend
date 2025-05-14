@@ -22,12 +22,19 @@ function Login() {
   };
 
   return (
-    <div>
+    <div className="form-container">
       <h2>Login</h2>
       <form onSubmit={handleSubmit}>
+        <div className="form-group">
         <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" required />
+       </div>
+       <div className="form-group">
         <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" required />
+        </div>
+        <div className="form-group">
         <button type="submit">Login</button>
+        </div>
+       
       </form>
     </div>
   );
