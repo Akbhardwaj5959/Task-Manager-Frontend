@@ -63,7 +63,7 @@ function Dashboard() {
     <div className="container py-5">
       <div className="card shadow p-4">
         <div className="d-flex justify-content-between align-items-center mb-3">
-          <h2 className="fw-bold">📋 Task Manager</h2>
+          <h2 className="fw-bold">📋 Task Manager  </h2>
           <button className="btn btn-danger" onClick={() => dispatch(clearToken())}>
             Logout
           </button>
@@ -121,6 +121,7 @@ function Dashboard() {
                     } me-2`}
                   >
                     {task.completed ? "Completed" : "Pending"}
+                    
                   </span>
                   <button
                     className="btn btn-sm btn-outline-danger"
