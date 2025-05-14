@@ -10,10 +10,6 @@ function Dashboard() {
   const tasks = useSelector((state) => state.tasks);
   const [newTask, setNewTask] = useState("");
   const [filter, setFilter] = useState("");
-  const [editId, setEditId] = useState(null);
-  const [editValue, setEditValue] = useState(""); 
-
-
 
   const fetchTasks = async () => {
     const res = await api.get("/tasks", {
@@ -45,26 +41,6 @@ function Dashboard() {
     });
     dispatch(updateTask(res.data));
   };
-  
-  const handleEdit = (task) => {
-    setEditId(task._id);
-    setEditValue(task.title);
-  };
-
-  const handleEditSave = async (task) => {
-    const updated = { ...task, title: editValue };
-    const res = await api.put(`/tasks/${task._id}`, updated, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    dispatch(updateTask(res.data));
-    setEditId(null);
-    setEditValue("");
-  };
-
-  const handleEditCancel = () => {
-    setEditId(null);
-    setEditValue("");
-  };
 
   useEffect(() => {
     fetchTasks();
@@ -92,53 +68,7 @@ function Dashboard() {
         />
       </div>
 
-      <>
-        {filteredTasks.map((task) => (
-          <li key={task._id} className="task-item">
-            {editId === task._id ? (
-              <>
-                <input
-                  className="form-control"
-                  value={editValue}
-                  onChange={(e) => setEditValue(e.target.value)}
-                  style={{ maxWidth: 200 }}
-                  autoFocus
-                />
-                <button className="btn btn-success btn-sm" onClick={() => handleEditSave(task)}>Update</button>
-                <button className="btn btn-secondary btn-sm" onClick={handleEditCancel}>Cancel</button>
-              </>
-            ) : (
-              <>
-                <span
-                  className={`task-title${task.completed ? " completed" : ""}`}
-                  title="Toggle Complete"
-                >
-                  {task.title}
-                </span>
-                <button
-                  className="btn btn-info btn-sm"
-                  onClick={() => handleEdit(task)}
-                >
-                  Edit
-                </button>
-                <button
-                  className={`btn btn-${task.completed ? "warning" : "success"} btn-sm`}
-                  onClick={() => handleToggleComplete(task)}
-                >
-                  {task.completed ? "Mark as Incomplete" : "Mark as Complete"}
-                </button>
-                <button
-                  className="btn btn-danger btn-sm"
-                  onClick={() => handleDelete(task._id)}
-                >
-                  Delete
-                </button>
-              </>
-            )}
-          </li>
-        ))}
-        
-         
+      <ul>
         {filteredTasks.map((task) => (
           <li key={task._id}>
             <span
@@ -153,7 +83,7 @@ function Dashboard() {
             <button onClick={() => handleDelete(task._id)}>Delete</button>
           </li>
         ))}
-      </>
+      </ul>
     </div>
   );
 }
