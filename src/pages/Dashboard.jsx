@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setTasks, addTask, deleteTask as removeTask, updateTask } from "../redux/taskSlice";
+import {
+  setTasks,
+  addTask,
+  deleteTask as removeTask,
+  updateTask,
+} from "../redux/taskSlice";
 import { clearToken } from "../redux/authSlice";
 import api from "../api";
 
@@ -19,10 +24,14 @@ function Dashboard() {
   };
 
   const handleAdd = async () => {
-    if (!newTask) return;
-    const res = await api.post("/tasks", { title: newTask }, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    if (!newTask.trim()) return;
+    const res = await api.post(
+      "/tasks",
+      { title: newTask },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
     dispatch(addTask(res.data));
     setNewTask("");
   };
@@ -44,46 +53,87 @@ function Dashboard() {
 
   useEffect(() => {
     fetchTasks();
-  }, );
+  }, []);
 
   const filteredTasks = tasks.filter((t) =>
     t.title.toLowerCase().includes(filter.toLowerCase())
   );
 
   return (
-    <div>
-      <h2>Dashboard</h2>
-      <button onClick={() => dispatch(clearToken())}>Logout</button>
+    <div className="container py-5">
+      <div className="card shadow p-4">
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h2 className="fw-bold">📋 Task Manager</h2>
+          <button className="btn btn-danger" onClick={() => dispatch(clearToken())}>
+            Logout
+          </button>
+        </div>
 
-      <div>
-        <input value={newTask} onChange={(e) => setNewTask(e.target.value)} placeholder="New Task" />
-        <button onClick={handleAdd}>Add Task</button>
-      </div>
+        <div className="input-group mb-3">
+          <input
+            value={newTask}
+            onChange={(e) => setNewTask(e.target.value)}
+            placeholder="New Task"
+            className="form-control"
+          />
+          <button className="btn btn-primary" onClick={handleAdd}>
+            Add Task
+          </button>
+        </div>
 
-      <div>
         <input
-          placeholder="Filter tasks"
+          className="form-control mb-3"
+          placeholder="Filter tasks..."
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
         />
-      </div>
 
-      <ul>
-        {filteredTasks.map((task) => (
-          <li key={task._id}>
-            <span
-              onClick={() => handleToggleComplete(task)}
-              style={{
-                textDecoration: task.completed ? "line-through" : "none",
-                cursor: "pointer",
-              }}
-            >
-              {task.title}
-            </span>
-            <button onClick={() => handleDelete(task._id)}>Delete</button>
-          </li>
-        ))}
-      </ul>
+        <ul className="list-group">
+          {filteredTasks.length === 0 ? (
+            <li className="list-group-item text-muted text-center">No tasks found.</li>
+          ) : (
+            filteredTasks.map((task) => (
+              <li
+                key={task._id}
+                className="list-group-item d-flex justify-content-between align-items-center"
+              >
+                <div className="form-check">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    checked={task.completed}
+                    onChange={() => handleToggleComplete(task)}
+                    id={`task-${task._id}`}
+                  />
+                  <label
+                    className={`form-check-label ${
+                      task.completed ? "text-decoration-line-through text-muted" : ""
+                    }`}
+                    htmlFor={`task-${task._id}`}
+                  >
+                    {task.title}
+                  </label>
+                </div>
+                <div>
+                  <span
+                    className={`badge ${
+                      task.completed ? "bg-success" : "bg-warning text-dark"
+                    } me-2`}
+                  >
+                    {task.completed ? "Completed" : "Pending"}
+                  </span>
+                  <button
+                    className="btn btn-sm btn-outline-danger"
+                    onClick={() => handleDelete(task._id)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </li>
+            ))
+          )}
+        </ul>
+      </div>
     </div>
   );
 }
